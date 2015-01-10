@@ -44,8 +44,8 @@ s.prepareForRecord;
 s.record
 
 (
-y = Synth(\sinewave, [\freq,5505]);
-x = Synth(\sinewave, [\freq,90]);
+y = Synth(\sinewave, [\freq,5105]);
+x = Synth(\sinewave, [\freq,42]);
 )
 
 x.free;y.free;
