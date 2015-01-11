@@ -19,3 +19,19 @@ var dur=2, envadsr, gate, envgen, output;
 	output = SinOsc.ar*envgen;
 }.play
 )
+
+
+// custom envelope that cycles from 400 - 440 - 400 etc
+// create the envelope
+(
+{
+	var envelope, trigger, envgen, output;
+	envelope = Env(levels:[0,1], times:[1,1], curve:\sine);
+	// generate the envelope
+	trigger = Impulse.kr(1);
+	envgen = EnvGen.ar(envelope,trigger);
+	output = SinOsc.ar(440,mul:envgen);
+}.play
+)
+
+{ SinOsc.ar(EnvGen.kr(Env.circle([0, 1], [0.01, 0.5, 0.2], curve:\sine)) * 55 + 5) * 0.1 }.play;
