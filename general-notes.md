@@ -33,4 +33,4 @@
 ** use the bus object so supercollider will pick the best choice bus to start from
 * Order of execution deals with the order of nodes on the server
 ** use groups to control ordering
-** set messages can be sent to Groups, which apply to all members of the group;
+** set messages can be sent to Groups, which apply to all members of the group
