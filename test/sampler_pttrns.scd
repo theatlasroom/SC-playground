@@ -1,16 +1,13 @@
-// Looping a sample
-// automatically handles resampling, looping forwards and backwards for both mono and stereo sources
-
-// you can set 4 parameters for the sampler
-// start, end, tpose -> 1 = 1 semitone, mode (+ve/-ve -> forwards/backwards)
-
+// Smplrrns
+// Mix patterns with a sampler
 (
-~path = Platform.resourceDir +/+ "sounds/a11wlk01.wav";
-b = Buffer.read(s, ~path);
-)
+// create a buffer for the song we will sample
+~song = "/Users/bardock/Music/atlas/disquiet-junto/0154 Project/export/The Atlas Room - above as below [disquiet0154-groove-unlocked].wav";
+b = Buffer.read(s, ~song);
 
-// MONO LOOPER
-(
+b.query;
+
+// define the mono looper
 SynthDef(\monolooper, {
 	|bufnum=0, start=0, end=0, tpose=0, mode=1|
 	var srBuffer, srSample, dir, rate, dur, startPos, endPos, pointer, output;
@@ -26,10 +23,10 @@ SynthDef(\monolooper, {
 	output = BufRd.ar(1, bufnum, pointer, 1, 4);
 	Out.ar(0, output);
 }).add;
-)
 
-// STEREO LOOPER
-(
+
+// define the stereo looper
+
 SynthDef(\stereolooper, {
 	|bufnum=0, start=0, end=0, tpose=0, mode=1|
 	var srBuffer, srSample, dir, rate, dur, startPos, endPos, pointer, output;
@@ -42,39 +39,43 @@ SynthDef(\stereolooper, {
 	endPos = Select.kr(dir.sign < 0, [end*srBuffer, start*srBuffer]); // set the start position based on the direction we are transposing
 
 	pointer = Phasor.ar(1/dur, rate, startPos, endPos);
-	output = BufRd.ar(22, bufnum, pointer, 1, 4);
+	output = BufRd.ar(2, bufnum, pointer, 1, 4);
 	Out.ar(0, output!2);
+}).add;
+
+SynthDef(\test, {
+	|freq=440, amp=1|
+	var sine;
+	SinOsc.ar(freq, mul:amp);
+	Out.ar(1,
 }).add;
 )
 
-// create the appropriate looper based on the number of channels in the sound source
 (
+// create the new stereo looper
 if (b.numChannels > 1,
 	{y = Synth(\stereolooper, [\bufnum, b.bufnum])}, // new stereo looper
 	{y = Synth(\monolooper, [\bufnum, b.bufnum])}); // new mono looper
+y.set(\start, 0, \end, 10, \tpose, 0, \mode, 1);
 )
 
-y.set(\start, 0, \end, 2, \tpose, 0, \mode, 1);
+(
+y.set(\tpose, -12);
+)
+
+
+(
+var score;
+j = [1, 2, 3, 4, 5, 6, 7, 8];
+k = [0,3,7,12];
+//score = j++k++(k-3)++(k-3)++[j]++[j-2];
+Pbind(\tpose, Pseq(j), \instrument, \test
+).play;
+)
+
+y.free;
+
+(
+// let's end this
 y.free;b.close;b.free;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+)
